@@ -1,55 +1,56 @@
 package com.bhaskar.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class LeaveStatus {
     @Id
-    private Integer id;
-    private Integer leave_id;
-    private Integer emp_id;
+    private Integer leaveStatusId;
+    private Integer leaveId;
+    private Integer empId;
+    private Integer approverId;
+    private String status;
 
-    public Integer getId() {
-        return id;
+    public Integer getLeaveStatusId() {
+        return leaveStatusId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setLeaveStatusId(Integer leaveStatusId) {
+        this.leaveStatusId = leaveStatusId;
     }
 
-    public Integer getLeave_id() {
-        return leave_id;
+    public Integer getLeaveId() {
+        return leaveId;
     }
 
-    public void setLeave_id(Integer leave_id) {
-        this.leave_id = leave_id;
+    public void setLeaveId(Integer leaveId) {
+        this.leaveId = leaveId;
     }
 
-    public Integer getEmp_id() {
-        return emp_id;
+    public Integer getEmpId() {
+        return empId;
     }
 
-    public void setEmp_id(Integer emp_id) {
-        this.emp_id = emp_id;
+    public void setEmpId(Integer empId) {
+        this.empId = empId;
     }
 
-    public Integer getApprover_id() {
-        return approver_id;
+    public Integer getApproverId() {
+        return approverId;
     }
 
-    public void setApprover_id(Integer approver_id) {
-        this.approver_id = approver_id;
+    public void setApproverId(Integer approverId) {
+        this.approverId = approverId;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
-
-    private Integer approver_id;
-    private Integer status;
 }

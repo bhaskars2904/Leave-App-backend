@@ -1,6 +1,8 @@
 package com.bhaskar.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -12,6 +14,30 @@ public class Leave {
     private Date endDate;
     private String descr;
     private Integer numLeaveDays;
+
+    public Leave() {
+    }
+
+    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays, Integer empId) {
+        this.leaveId = leaveId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.descr = descr;
+
+        this.numLeaveDays = numLeaveDays;
+        this.empId = empId;
+    }
+
+
+    private Integer empId;
+
+    public Integer getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(Integer empId) {
+        this.empId = empId;
+    }
 
     public String getDescr() {
         return descr;

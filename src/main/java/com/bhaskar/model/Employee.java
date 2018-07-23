@@ -11,30 +11,14 @@ public class Employee {
     private String lname;
     private String mail;
     private Integer role;
-    private String username;
+    private String uname;
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getId() {
+    public Integer getEmpId() {
         return empId;
     }
 
-    public void setId(Integer empId) {
+    public void setEmpId(Integer empId) {
         this.empId = empId;
     }
 
@@ -68,5 +52,21 @@ public class Employee {
 
     public void setRole(Integer role) {
         this.role = role;
+    }
+
+    public String getUname() {
+        return uname;
+    }
+
+    public void setUname(String uname) {
+        this.uname = uname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
