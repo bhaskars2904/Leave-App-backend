@@ -1,4 +1,4 @@
-package com.bhaskar.model;
+package com.bhaskar.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,7 +12,6 @@ public class Employee {
     private String mail;
     private Integer role;
     private String uname;
-    private String password;
 
     public Integer getEmpId() {
         return empId;
@@ -62,11 +61,4 @@ public class Employee {
         this.uname = uname;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

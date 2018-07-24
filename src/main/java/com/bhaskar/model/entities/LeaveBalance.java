@@ -1,4 +1,4 @@
-package com.bhaskar.model;
+package com.bhaskar.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -1,14 +1,18 @@
 package com.bhaskar.controller;
 
+import com.bhaskar.Service.ApproverLeaveService;
+import com.bhaskar.Service.EmployeeDetailService;
+import com.bhaskar.Service.EmployeeLeaveService;
 import com.bhaskar.dao.EmployeeDao;
 import com.bhaskar.dao.LeaveDao;
 import com.bhaskar.dao.LeaveStatusDao;
 import com.bhaskar.dao.MixedDao;
-import com.bhaskar.model.Employee;
-import com.bhaskar.model.Leave;
-import com.bhaskar.model.LeaveStatus;
+import com.bhaskar.model.ApproverLeaveDetail;
+import com.bhaskar.model.EmployeeDetail;
+import com.bhaskar.model.entities.Employee;
+import com.bhaskar.model.entities.Leave;
+import com.bhaskar.model.entities.LeaveStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -29,23 +33,46 @@ public class MainController {
     private MixedDao mixedDao;
     @Autowired
     private LeaveStatusDao leaveStatusDao;
+    @Autowired
+    private EmployeeDetailService employeeDetailService;
+    @Autowired
+    private EmployeeLeaveService employeeLeaveService;
+    @Autowired
+    private ApproverLeaveService approverLeaveService;
 
+//    @RequestMapping(value = "/employee/{uname}", method = RequestMethod.GET, produces="application/json")
+//    @ResponseBody
+//    public List<Object> getEmployeeDetails(@PathVariable String uname){
+//        return mixedDao.getEmployeeDetails(uname);
+//    }
     @RequestMapping(value = "/employee/{uname}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<Object> getEmployeeDetails(@PathVariable String uname){
-        return mixedDao.getEmployeeDetails(uname);
+    public List<EmployeeDetail> getEmployeeDetails(@PathVariable String uname){
+       return employeeDetailService.getEmployeeDetails(uname);
     }
+
+//    @RequestMapping(value = "/leaves/{uname}", method = RequestMethod.GET, produces="application/json")
+//    @ResponseBody
+//    public List<Object> getEmployeeLeaves(@PathVariable String uname){
+//        return mixedDao.getLeaves(uname);
+//    }
 
     @RequestMapping(value = "/leaves/{uname}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<Object> getEmployeeLeaves(@PathVariable String uname){
-        return mixedDao.getLeaves(uname);
+    public List<Leave> getEmployeeLeaves(@PathVariable String uname){
+        return employeeLeaveService.getEmployeeLeaves(uname);
     }
+
+//    @RequestMapping(value = "/requests/{uname}", method = RequestMethod.GET, produces="application/json")
+//    @ResponseBody
+//    public List<Object> getRequests(@PathVariable String uname){
+//        return mixedDao.getRequests(uname);
+//    }
 
     @RequestMapping(value = "/requests/{uname}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<Object> getRequests(@PathVariable String uname){
-        return mixedDao.getRequests(uname);
+    public List<LeaveStatus> getApproverLeaveDetails(@PathVariable String uname){
+        return approverLeaveService.getApproverLeaveDetails(uname);
     }
 
     @RequestMapping(value = "/leaveinfo/{uname}", method = RequestMethod.GET, produces="application/json")
@@ -86,7 +113,7 @@ public class MainController {
                 LeaveStatus leaveStatus = new LeaveStatus();
                 leaveStatusIndex+=1;
                 leaveStatus.setLeaveStatusId(leaveStatusIndex);
-                leaveStatus.setLeaveId(leaveIndex);
+//                leaveStatus.setLeaveId(leaveIndex);
                 leaveStatus.setEmpId(emp_id);
                 leaveStatus.setApproverId(approver);
                 leaveStatus.setStatus("Pending");

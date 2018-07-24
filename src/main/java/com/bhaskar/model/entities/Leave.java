@@ -1,10 +1,15 @@
-package com.bhaskar.model;
+package com.bhaskar.model.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Leave {
@@ -14,17 +19,22 @@ public class Leave {
     private Date endDate;
     private String descr;
     private Integer numLeaveDays;
+    @OneToMany
+    @JoinColumn(name="leaveId")
+    @JsonManagedReference
+    private List<LeaveStatus> leaves;
 
     public Leave() {
     }
 
-    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays, Integer empId) {
+    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays, List<LeaveStatus> leaves, Integer empId) {
         this.leaveId = leaveId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.descr = descr;
 
         this.numLeaveDays = numLeaveDays;
+        this.leaves = leaves;
         this.empId = empId;
     }
 
@@ -77,5 +87,13 @@ public class Leave {
 
     public void setNumLeaveDays(Integer numLeaveDays) {
         this.numLeaveDays = numLeaveDays;
+    }
+
+    public List<LeaveStatus> getLeaves() {
+        return leaves;
+    }
+
+    public void setLeaves(List<LeaveStatus> leaves) {
+        this.leaves = leaves;
     }
 }
