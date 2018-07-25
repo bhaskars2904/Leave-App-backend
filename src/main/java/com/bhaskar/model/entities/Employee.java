@@ -2,6 +2,8 @@ package com.bhaskar.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Employee {
@@ -12,6 +14,19 @@ public class Employee {
     private String mail;
     private Integer role;
     private String uname;
+
+
+    public Employee() {
+    }
+
+    public Employee(Integer empId, String fname, String lname, String mail, Integer role, String uname) {
+        this.empId = empId;
+        this.fname = fname;
+        this.lname = lname;
+        this.mail = mail;
+        this.role = role;
+        this.uname = uname;
+    }
 
     public Integer getEmpId() {
         return empId;

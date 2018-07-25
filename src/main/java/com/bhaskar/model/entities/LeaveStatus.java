@@ -9,27 +9,39 @@ import javax.persistence.*;
 public class LeaveStatus {
     @Id
     private Integer leaveStatusId;
-    private Integer leaveId;
     private Integer empId;
     private Integer approverId;
     private String status;
-    @ManyToOne
-    @JoinColumn(name="leaveId",referencedColumnName="leaveId", insertable = false, updatable = false)
-    @JsonBackReference
-    private Leave leave;
+    private Integer leaveId;
+//    @ManyToOne
+//    @JoinColumn(name="leave_id",nullable= false)
+//    @JsonBackReference
+//    private Leave leave;
 
     public LeaveStatus() {
     }
 
     public LeaveStatus(Integer leaveStatusId, Integer leaveId, Integer empId, Integer approverId, String status, Leave leave) {
-
         this.leaveStatusId = leaveStatusId;
         this.leaveId = leaveId;
         this.empId = empId;
         this.approverId = approverId;
         this.status = status;
-        this.leave = leave;
     }
+
+//    public LeaveStatus(Integer leaveStatusId, Integer empId, Integer approverId, String status, Integer leaveId, Leave leave) {
+//        this.leaveStatusId = leaveStatusId;
+//        this.empId = empId;
+//        this.approverId = approverId;
+//        this.status = status;
+//        this.leaveId = leaveId;
+//        this.leave = leave;
+//    }
+
+
+//        this.leave = leave;
+//    }
+
 
     public Integer getLeaveStatusId() {
         return leaveStatusId;
@@ -39,13 +51,13 @@ public class LeaveStatus {
         this.leaveStatusId = leaveStatusId;
     }
 
-    public Integer getLeaveId() {
-        return leaveId;
-    }
-
-    public void setLeaveId(Integer leaveId) {
-        this.leaveId = leaveId;
-    }
+//    public Integer getLeaveId() {
+//        return leaveId;
+//    }
+//
+//    public void setLeaveId(Integer leaveId) {
+//        this.leaveId = leaveId;
+//    }
 
     public Integer getEmpId() {
         return empId;
@@ -71,12 +83,20 @@ public class LeaveStatus {
         this.status = status;
     }
 
-    public Leave getLeave() {
+//    public Leave getLeave() {
+//
+//        return leave;
+//    }
+//
+//    public void setLeave(Leave leave) {
+//        this.leave = leave;
+//    }
 
-        return leave;
+    public Integer getLeaveId() {
+        return leaveId;
     }
 
-    public void setLeave(Leave leave) {
-        this.leave = leave;
+    public void setLeaveId(Integer leaveId) {
+        this.leaveId = leaveId;
     }
 }

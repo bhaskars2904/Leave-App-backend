@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -19,27 +16,43 @@ public class Leave {
     private Date endDate;
     private String descr;
     private Integer numLeaveDays;
-    @OneToMany
-    @JoinColumn(name="leaveId")
-    @JsonManagedReference
-    private List<LeaveStatus> leaves;
+    private Integer empId;
+
+//    ManyToOne
+//    JoinColumn(name = "emp_id", nullable=false)
+//    private Employee employee;
+
+//    OneToMany(mappedBy = "leave")
+//    JsonManagedReference
+//    private List<LeaveStatus> leaves;
 
     public Leave() {
     }
-
-    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays, List<LeaveStatus> leaves, Integer empId) {
+    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays) {
         this.leaveId = leaveId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.descr = descr;
-
         this.numLeaveDays = numLeaveDays;
-        this.leaves = leaves;
-        this.empId = empId;
     }
 
-
-    private Integer empId;
+//    public Employee getEmployee() {
+//        return employee;
+//    }
+//
+//    public void setEmployee(Employee employee) {
+//        this.employee = employee;
+//    }
+//    public Leave(Integer leaveId, Date startDate, Date endDate, String descr, Integer numLeaveDays, List<LeaveStatus> leaves, Integer empId) {
+//        this.leaveId = leaveId;
+//        this.startDate = startDate;
+//        this.endDate = endDate;
+//        this.descr = descr;
+//        this.leaves = leaves;
+//        this.numLeaveDays = numLeaveDays;
+//        this.leaves = leaves;
+//        this.empId = empId;
+//    }
 
     public Integer getEmpId() {
         return empId;
@@ -89,11 +102,11 @@ public class Leave {
         this.numLeaveDays = numLeaveDays;
     }
 
-    public List<LeaveStatus> getLeaves() {
-        return leaves;
-    }
-
-    public void setLeaves(List<LeaveStatus> leaves) {
-        this.leaves = leaves;
-    }
+//    public List<LeaveStatus> getLeaves() {
+//        return leaves;
+//    }
+//
+//    public void setLeaves(List<LeaveStatus> leaves) {
+//        this.leaves = leaves;
+//    }
 }
