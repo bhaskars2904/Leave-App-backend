@@ -4,10 +4,12 @@ import com.bhaskar.Service.*;
 import com.bhaskar.model.*;
 import com.bhaskar.model.entities.Employee;
 import com.bhaskar.model.entities.EmployeeSecret;
+import com.bhaskar.security.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import sun.text.normalizer.ICUBinary;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +37,10 @@ public class MainController {
     @RequestMapping(value = "/employee/{uname}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public Employee getEmployeeDetails(@PathVariable String uname){
-        return employeeDetailService.getEmployeeDetails(uname);
+//        return employeeDetailService.getEmployeeDetails(uname);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String)auth.getPrincipal();
+        return employeeDetailService.getEmployeeDetails(name);
     }
 
     @RequestMapping(value = "/leaves/{uname}", method = RequestMethod.GET, produces="application/json")
@@ -76,12 +81,25 @@ public class MainController {
 
     @RequestMapping(value="/login", method = RequestMethod.POST,produces = "application/json")
     @ResponseBody
-    public User login(HttpServletRequest request, HttpServletResponse response){
-        User user = new User();
+    public MyUser login(HttpServletRequest request, HttpServletResponse response){
+        MyUser user = new MyUser();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        user.setUname(auth.getName());
+
+        System.out.println("authentication object is "+auth);
+        String name = (String) auth.getPrincipal();
+
+        user.setUname(name);
         user.setRole(1);
+        user.setToken("token is here");
         return user;
+    }
+
+    @RequestMapping(value = "/hello",method = RequestMethod.GET)
+    @ResponseBody
+    public String hello(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String) authentication.getPrincipal();
+        return name;
     }
 
 }

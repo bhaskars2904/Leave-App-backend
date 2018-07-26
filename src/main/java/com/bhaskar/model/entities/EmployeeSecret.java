@@ -8,10 +8,19 @@ import javax.persistence.Id;
 @Entity
 public class EmployeeSecret {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String uname;
     private String password;
+
+    public EmployeeSecret(int id, String uname, String password) {
+        this.id = id;
+        this.uname = uname;
+        this.password = password;
+    }
+
+    public EmployeeSecret() {
+    }
 
     public int getId() {
         return id;

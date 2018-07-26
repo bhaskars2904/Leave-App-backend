@@ -13,11 +13,8 @@ import static java.util.Collections.emptyList;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    @Autowired
     private EmployeeSecretDao employeeSecretDao;
-
-    public UserDetailsServiceImpl(EmployeeSecretDao employeeSecretDao) {
-        this.employeeSecretDao = employeeSecretDao;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String uname) throws UsernameNotFoundException {

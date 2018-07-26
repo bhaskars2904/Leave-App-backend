@@ -1,6 +1,7 @@
 package com.bhaskar.security;
 
 import com.bhaskar.Service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,14 +18,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(origins = "*")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public WebSecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,6 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS,"/").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/signup").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // We filter the api/login requests
@@ -55,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .roles("ADMIN");*/
 
 //        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-        authenticationManagerBuilder.userDetailsService(userDetailsServiceImpl).passwordEncoder(bCryptPasswordEncoder)  ;
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder)  ;
     }
 
 }
