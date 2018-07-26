@@ -1,31 +1,22 @@
 package com.bhaskar.controller;
 
 import com.bhaskar.Service.*;
-//import com.bhaskar.dao.EmployeeDao;
-//import com.bhaskar.dao.LeaveDao;
-//import com.bhaskar.dao.LeaveStatusDao;
-//import com.bhaskar.dao.MixedDao;
-import com.bhaskar.model.ApproverLeaveDetail;
-import com.bhaskar.model.EmployeeDetail;
-import com.bhaskar.model.EmployeeLeaveDetail;
-import com.bhaskar.model.LeaveApplyDetail;
+import com.bhaskar.model.*;
+import com.bhaskar.model.entities.Employee;
+import com.bhaskar.model.entities.EmployeeSecret;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/")
 public class MainController {
-//    @Autowired
-//    private EmployeeDao employeeDao;
-//    @Autowired
-//    private LeaveDao leaveDao;
-//    @Autowired
-//    private MixedDao mixedDao;
-//    @Autowired
-//    private LeaveStatusDao leaveStatusDao;
     @Autowired
     private EmployeeDetailService employeeDetailService;
     @Autowired
@@ -38,11 +29,13 @@ public class MainController {
     private SubmitLeaveService submitLeaveService;
     @Autowired
     private ChangeLeaveStatusService changeLeaveStatusService;
+    @Autowired
+    private SignUpService signUpService;
 
     @RequestMapping(value = "/employee/{uname}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<EmployeeDetail> getEmployeeDetails(@PathVariable String uname){
-       return employeeDetailService.getEmployeeDetails(uname);
+    public Employee getEmployeeDetails(@PathVariable String uname){
+        return employeeDetailService.getEmployeeDetails(uname);
     }
 
     @RequestMapping(value = "/leaves/{uname}", method = RequestMethod.GET, produces="application/json")
@@ -73,6 +66,22 @@ public class MainController {
     @ResponseBody
     public void changeLeaveStatus(@RequestBody Map<String, Object> payload)throws Exception{
         changeLeaveStatusService.approveOrReject(payload);
+    }
+
+    @RequestMapping(value="/signup", method = RequestMethod.POST)
+    @ResponseBody
+    public void signUp(@RequestBody EmployeeSecret employeeSecret) {
+        signUpService.signUpEmployee(employeeSecret);
+    }
+
+    @RequestMapping(value="/login", method = RequestMethod.POST,produces = "application/json")
+    @ResponseBody
+    public User login(HttpServletRequest request, HttpServletResponse response){
+        User user = new User();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        user.setUname(auth.getName());
+        user.setRole(1);
+        return user;
     }
 
 }
