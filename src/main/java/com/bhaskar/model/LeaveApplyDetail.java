@@ -1,8 +1,5 @@
 package com.bhaskar.model;
 
-import com.bhaskar.model.entities.EmpManager;
-import com.bhaskar.model.entities.Employee;
-
 import java.util.List;
 
 public class LeaveApplyDetail {

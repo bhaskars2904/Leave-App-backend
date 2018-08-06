@@ -1,0 +1,207 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/vaadin-dialog/vaadin-dialog.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="request-imports.html">
+
+<dom-module id="my-view2">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      #grid {
+        height: 560px;
+      }
+      .submit{
+        height: 40px;
+        font-size: 18px;
+        padding-top: 10px;
+        background-color: #C2BEED;
+      }
+      #approve{
+        background-color: #3D8AC6;
+      }
+      #reject:hover{
+        background-color: red;
+      }
+      .details {
+        display: block;
+        width: 700px;
+        font-size: 25px;
+        padding-top: 30px;
+        padding-left: 100px;
+        align-content: space-between;
+      }
+      #applyModal{
+        width: 650px;
+        background-color: #ECD0A7;
+      }
+    </style>
+
+    <iron-ajax
+            content-type="application/json"
+            id="getRequestsAjax"
+            headers="[[headers]]"
+            url="http://localhost:8080/requests"
+            handle-as="json"
+            method="GET"
+            on-response="_handleRequests"
+            on-error="_handleLoginError">
+    </iron-ajax>
+
+
+    <iron-ajax
+            content-type="application/json"
+            id="setStatusAjax"
+            headers="[[headers]]"
+            url="http://localhost:8080/statuschange"
+            handle-as="json"
+            method="POST"
+            on-response="_handleStatusChange">
+    </iron-ajax>
+
+    <div>
+      <div id="grid">
+        <px-data-grid
+          table-data="[[requests]]"
+          resizable
+          column-reordering-allowed
+          selection-mode="single"
+          hide-action-menu
+          flex-to-size="true"
+          selected-items='{{selected}}'
+          hide-selection-column
+          table-actions='[{"name":"Export CSV","id":"CSV"}]'
+          item-actions='[]'
+          highlight='[]'>
+        </px-data-grid>
+      </div>
+      <vaadin-dialog opened="{{opened}}" id="applyModal">
+        <template>
+          <paper-button  raised id="approve" class="submit" on-click="approve">Approve</paper-button>
+          <paper-button  raised id="reject" class="submit" on-click="reject">Reject</paper-button>
+        </template>     
+      </vaadin-dialog>
+    </div>
+  </template>
+
+  <script>
+    class MyView2 extends Polymer.Element {
+      static get is() { return 'my-view2'; }
+      static get properties(){
+        return {
+          data: {
+            type: Array,
+            value: []
+          },
+          requests: {
+            type: Array,
+            value: []
+          },
+          activeItem: {
+            observer: '_activeItemChanged'
+          },
+          selected: {
+            type: Array,
+            observer: '_selected'
+          },
+          token: {
+              type: String,
+              notify: true
+          },
+          headers: {
+              type: Object,
+              computed: '_computeHeader(token)'
+          },
+          status: {
+            type: Object,
+            value: {}
+          }
+        }
+      }
+      constructor(){
+        super();
+        this.opened = false;
+        this.data = [];
+        this.requests=[];
+        <!--this.requests = RequestService.getRequestsForTable(this.data);-->
+      }
+       
+      _selected(item){
+          setTimeout(function () {
+            if(item.length>0 && item[0]['status']=="Pending"){
+              this.opened = true;
+            }    
+          }.bind(this));
+          
+      }
+
+      static get observers() {
+        return [
+          '_getRequests(token)'
+        ];
+      }
+
+      _getRequests(token){
+      	if(token != ""){
+      		this.$.getRequestsAjax.generateRequest();
+      	}
+      }
+
+      _computeHeader(token) {
+        return {"Authorization": this.token};
+      }
+
+      _handleRequests(evt){
+        console.log(evt.detail.xhr.response);
+      	this.data = evt.detail.xhr.response;
+      	this.requests = RequestService.getRequestsForTable(this.data);
+      }
+
+      <!--submit(e){-->
+        <!--this.opened = false;  -->
+      <!--}-->
+
+      approve(e){
+        this.opened = false;
+        this.status.leaveId = (this.selected)[0].leaveId;
+        this.status.status = "accept";
+        if(this.token != ""){
+            this.$.setStatusAjax.body = this.status;
+      		this.$.setStatusAjax.generateRequest();
+      	}
+      }
+
+      reject(e){
+        this.opened = false;
+        this.status.leaveId = (this.selected)[0].leaveId;
+        this.status.status = "reject";
+        if(this.token != ""){
+            this.$.setStatusAjax.body = this.status;
+      		this.$.setStatusAjax.generateRequest();
+      		(this.selected)[0].status="Rejected";
+      	}
+      }
+
+      _handleStatusChange(evt){
+        this.data = evt.detail.xhr.response;
+      	this.requests = RequestService.getRequestsForTable(this.data);
+      }
+    }
+
+    window.customElements.define(MyView2.is, MyView2);
+  </script>
+</dom-module>

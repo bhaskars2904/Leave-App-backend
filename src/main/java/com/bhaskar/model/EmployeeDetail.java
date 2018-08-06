@@ -1,6 +1,7 @@
 package com.bhaskar.model;
 
 public class EmployeeDetail {
+    private int empId;
     private String fname;
     private String lname;
     private String mail;
@@ -9,7 +10,8 @@ public class EmployeeDetail {
 
     }
 
-    public EmployeeDetail(String fname, String lname, String mail) {
+    public EmployeeDetail(String fname, String lname, String mail, int empId) {
+        this.empId = empId;
         this.fname = fname;
         this.lname = lname;
         this.mail = mail;
@@ -37,5 +39,13 @@ public class EmployeeDetail {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public int getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(int empId) {
+        this.empId = empId;
     }
 }

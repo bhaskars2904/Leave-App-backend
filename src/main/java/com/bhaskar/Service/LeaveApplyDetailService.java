@@ -23,7 +23,6 @@ public class LeaveApplyDetailService {
     LeaveBalanceDao leaveBalanceDao;
     public LeaveApplyDetail getLeaveApplyDetails(String uname){
         LeaveApplyDetail leaveApplyDetail = new LeaveApplyDetail();
-//        leaveApplyDetail.setLeaveLeft(leaveBalanceDao.findLeaveLeftById(employeeDao.findByUname(uname).getEmpId()));
         leaveApplyDetail.setLeaveLeft(leaveBalanceDao.findByEmpId(employeeDao.findByUname(uname).getEmpId()).getLeaveLeft());
         List<EmployeeDetail> approverDetails= new ArrayList<EmployeeDetail>();
         List<Employee> approvers = new ArrayList<Employee>();
@@ -31,6 +30,7 @@ public class LeaveApplyDetailService {
            EmployeeDetail employeeDetail = new EmployeeDetail();
            int approverId = empManager.getManId();
            Employee approver = employeeDao.findByEmpId(approverId);
+           employeeDetail.setEmpId(approverId);
            employeeDetail.setFname(approver.getFname());
            employeeDetail.setLname(approver.getLname());
            employeeDetail.setMail(approver.getMail());

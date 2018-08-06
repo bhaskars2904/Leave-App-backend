@@ -1,12 +1,16 @@
 package com.bhaskar.Service;
 
 import com.bhaskar.dao.EmployeeDao;
+import com.bhaskar.dao.LeaveBalanceDao;
 import com.bhaskar.dao.LeaveDao;
 import com.bhaskar.dao.LeaveStatusDao;
 import com.bhaskar.model.entities.Leave;
+import com.bhaskar.model.entities.LeaveBalance;
 import com.bhaskar.model.entities.LeaveStatus;
 import com.bhaskar.util.DaysFromDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -23,13 +27,15 @@ public class SubmitLeaveService {
     private LeaveStatusDao leaveStatusDao;
     @Autowired
     private EmployeeDao employeeDao;
+    @Autowired
+    private LeaveBalanceDao leaveBalanceDao;
     public void submitLeave(Map<String, Object> payload) throws ParseException {
         if(payload!=null){
             Leave leave = new Leave();
-
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String uname = (String)auth.getPrincipal();
             int leaveId = (int)leaveDao.count();
             leaveId += 1;
-            String uname = (String) payload.get("uname");
             String descr = (String) payload.get("descr");
             String startDate = (String)payload.get("startDate");
             String endDate = (String)payload.get("endDate");
@@ -40,6 +46,7 @@ public class SubmitLeaveService {
             leave.setEndDate(getDateFromString(endDate));
             leave.setNumLeaveDays(DaysFromDate.getDaysFromString(startDate,endDate,"yyyy-MM-dd"));
             leaveDao.save(leave);
+            deductLeave(leaveId);
 
 
             int leaveStatusId = (int)leaveStatusDao.count();
@@ -63,5 +70,17 @@ public class SubmitLeaveService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         Date date = simpleDateFormat.parse(dateString);
         return date;
+    }
+
+    private void deductLeave(int leaveId){
+        int empId =  leaveDao.findByLeaveId(leaveId).getEmpId();
+        int numLeaveDays = leaveDao.findByLeaveId(leaveId).getNumLeaveDays();
+        LeaveBalance leaveBalance = leaveBalanceDao.findByEmpId(empId);
+        int daysLeft = leaveBalance.getLeaveLeft();
+        if(numLeaveDays<=daysLeft){
+            daysLeft = daysLeft - numLeaveDays;
+        }
+        leaveBalance.setLeaveLeft(daysLeft);
+        leaveBalanceDao.save(leaveBalance);
     }
 }

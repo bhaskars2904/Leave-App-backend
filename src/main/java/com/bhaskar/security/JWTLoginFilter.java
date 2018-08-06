@@ -30,6 +30,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         try {
             EmployeeSecret employeeSecret = new ObjectMapper()
                     .readValue(httpServletRequest.getInputStream(), EmployeeSecret.class);
+            httpServletRequest.setAttribute("name", employeeSecret.getUname());
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             employeeSecret.getUname(),

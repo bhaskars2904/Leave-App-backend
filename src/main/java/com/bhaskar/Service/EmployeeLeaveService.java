@@ -39,9 +39,7 @@ public class EmployeeLeaveService {
                 ApproverDetail approverDetail = new ApproverDetail();
                 EmployeeDetail employeeDetail = new EmployeeDetail();
                 int approverId = leaveStatus.getApproverId();
-//                employeeDetail.setFname(employeeDao.findById(approverId).getFname());
-//                employeeDetail.setLname(employeeDao.findById(approverId).getLname());
-//                employeeDetail.setMail(employeeDao.findById(approverId).getMail());
+                employeeDetail.setEmpId(approverId);
                 employeeDetail.setFname(employeeDao.findByEmpId(approverId).getFname());
                 employeeDetail.setLname(employeeDao.findByEmpId(approverId).getLname());
                 employeeDetail.setMail(employeeDao.findByEmpId(approverId).getMail());

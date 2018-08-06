@@ -1,0 +1,251 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/px-data-grid/px-data-grid.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="leaveinfo-imports.html">
+<link rel="import" href="validate-imports.html">
+<link rel="import" href="approverarray-imports.html">
+<link rel="import" href="leave-imports.html">
+
+<dom-module id="my-modal">
+	<template>
+		<style>
+			:host{
+				height: 100px;
+				width: 300px;
+			}
+			.submit{
+		      	left:40%;
+		      	top: 99%;
+		        height: 40px;
+		        font-size: 18px;
+		    }
+		    .submit:hover {
+		      	background-color: #3D8AC6;
+		    }
+		    #managerSelect{
+		    	height: 100px;
+		    	width: 400px;	
+		    }
+		    .leaveDayInfo{
+		    	padding-top: 20px;
+		    }
+		    #errorArea{
+		    	font-size: 10px;
+		    	color: red;
+		    }
+		</style>
+
+		<iron-ajax
+				content-type="application/json"
+				id="getLeaveInfoAjax"
+				headers="[[headers]]"
+				url="http://localhost:8080/leaveinfo"
+				handle-as="json"
+				method="GET"
+				on-response="_handleLeaveInfo">
+		</iron-ajax>
+
+		<iron-ajax
+				content-type="application/json"
+				id="postLeaveAjax"
+				headers="[[headers]]"
+				url="http://localhost:8080/leavesubmit"
+				handle-as="json"
+				method="POST"
+				on-response="_handleLeaveSubmit">
+		</iron-ajax>
+
+		<div style="display: inline-block">
+			<iron-form id="leaveApply">
+				<form>
+					<paper-input id="startDate" label="Start Date" type="date" value="{{startDate}}" error-message="Start date is before current date"></paper-input>
+					<paper-input id="endDate" label="End Date" type="date" value="{{endDate}}" error-message="Enter an end date after start date"></paper-input>
+					<div class="leaveDayInfo"><text>Leaves left :<text>[[data.leaveLeft]]</text></text></div>
+					<div class="leaveDayInfo"><text>Leave Days :<text>[[numLeaveDays]]</text></text></div>
+					<div id="errorArea" hidden="[[hidden]]">Leave days cannot be greater than leave left</div>
+					<paper-textarea id="leaveDesc" label="Leave Description" value="{{leaveDesc}}"></paper-textarea>
+					<div id="managerSelect">
+						<px-data-grid
+							table-data="[[leaveinfo]]"
+							selection-mode="multi"
+							hide-action-menu
+							flex-to-size
+							selected-items="{{selected}}">
+						</px-data-grid>
+					</div>
+				</form>
+			</iron-form>
+			<paper-button disabled="{{submitDisabled}}" raised class="submit" on-click="submit">Submit</paper-button>
+		</div>	
+	</template>
+	<script>
+		class MyModal extends Polymer.Element{
+			static get is(){return 'my-modal';}
+			static get properties() {
+			    return {
+					startDate: Date,
+					endDate: Date,
+					numLeaveDays: Number,
+					leaveDesc: String,
+					data: {
+		      			type: Object,
+						value: {}
+		      		},
+		      		leaveinfo:{
+		      			type: Array,
+		      			value: []
+		      		},
+		      		submitDisabled:{
+		      			type: Boolean,
+		      			value: true
+		      		},
+          			selected:{
+          				type: Array
+          			},
+          			opened:{
+          				type: Boolean,
+          				notify: true,
+          				observer: '_openedChanged'
+          			},
+					token: {
+						type: String,
+						notify: true
+					},
+					headers: {
+						type: Object,
+						computed: '_computeHeader(token)'
+					},
+					leaveApplyData: {
+						type: Object,
+						value: {}
+					},
+					refreshdata:{
+						type: Object,
+						value: {}
+					},
+					refreshleaves: {
+						type: Array,
+						value: [],
+						notify: true
+					},
+					savedleave: {
+						type: Object,
+						notify: true
+					}
+
+			      }
+			    }
+
+		    constructor(){
+		    	super();
+		    	<!--this.data={};-->
+		    }
+
+		    static get observers(){
+		    	return [
+		    		'_toSubmit(startDate, endDate, selected.*)',
+		    		'_getLeaveInfo(token)'
+		    	]
+		    }
+			_openedChanged(opened) {
+				if(opened) {
+					this.initLeaveInfo();
+				}
+			}
+
+			//LEAVE INFO BLOCK
+
+			initLeaveInfo() {
+				this.startDate = ((new Date()).toISOString()).slice(0,10);
+				this.endDate = ((new Date()).toISOString()).slice(0,10);
+				this.leaveDesc = "";
+				this.selected = [];
+				this.hidden = true;
+
+			}
+		    _getLeaveInfo(token){
+				if(token != ""){
+					this.$.getLeaveInfoAjax.generateRequest();
+				}
+			 }
+
+		    _computeHeader(token) {
+				return {"Authorization": this.token};
+			 }
+
+			 _handleLeaveInfo(evt){
+			 	this.data = evt.detail.xhr.response;
+				this.leaveinfo = LeaveInfoService.getLeaveInfoService(this.data);
+			 }
+
+
+			//LEAVE SUBMIT BLOCK
+
+
+			 _handleLeaveSubmit(evt){
+			 	this.refreshdata = evt.detail.xhr.response;
+			 	<!--console.log("refresh data = "+this.refreshdata);-->
+			 	<!--console.log("converted refresh data = "+LeaveService.getLeavesForTable(this.refreshdata));-->
+				<!--this.refreshleaves = LeaveInfoService.getLeaveInfoService(this.refreshdata);-->
+				this.dispatchEvent(new CustomEvent('leavesent', {detail: LeaveService.getLeavesForTable(this.refreshdata)}));
+			 }
+
+		    _toSubmit(startDate, endDate, item){
+
+		    	this.$.startDate.invalid = false;
+		    	this.$.endDate.invalid = false;
+		    	this.hidden = true;
+		    	this.submitDisabled = true;
+
+
+		    	if(startDate || endDate){
+		    		var validationCode = validate(startDate, endDate, item);
+		    		if(validationCode == "101"){
+		    			this.$.startDate.invalid = true;
+		    			this.numLeaveDays = "";
+		    		}
+		    		if(validationCode == "201"){
+		    			this.$.endDate.invalid = true;
+		    			this.numLeaveDays = "";
+		    		}
+		    		if(validationCode == "301"){
+		    			if(isNaN(countDays(startDate, endDate))){
+		    				this.numLeaveDays = 1;
+		    			}else{
+		    				this.numLeaveDays = countDays(startDate, endDate);
+		    				if(this.numLeaveDays>this.data.leaveLeft){
+		    					this.hidden = false;
+		    				}
+		    			}
+		    		}
+		    		if(validationCode == "200"){
+		    			this.numLeaveDays = countDays(startDate, endDate);
+		    			if(this.numLeaveDays<=this.data.leaveLeft){
+		    				this.submitDisabled = false;
+		    			}else{
+		    				this.hidden = false;
+		    			}
+		    		}
+		    	}
+		    	return;
+	    	}
+		    submit(e){
+		        this.opened = !this.opened;
+		        this.leaveApplyData.startDate = this.startDate;
+		        this.leaveApplyData.endDate = this.endDate;
+		        this.leaveApplyData.descr = this.leaveDesc;
+		        this.leaveApplyData.approvers = getApproversArray(this.selected);
+		        console.log("following is leave apply data ");
+		        console.log(this.leaveApplyData);
+		        this.$.postLeaveAjax.body = this.leaveApplyData;
+		        this.$.postLeaveAjax.generateRequest();
+
+		    }
+		}
+	window.customElements.define(MyModal.is, MyModal);
+	</script>
+</dom-module>

@@ -1,11 +1,14 @@
 package com.bhaskar.model;
 
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class ApproverLeaveDetail {
     private int leaveId;
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "IST")
     private Date startDate;
+    @JsonFormat(pattern="yyyy-MM-dd", timezone = "IST")
     private Date endDate;
     private String descr;
     private int empId;

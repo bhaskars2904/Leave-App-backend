@@ -1,15 +1,15 @@
 package com.bhaskar.controller;
 
 import com.bhaskar.Service.*;
-import com.bhaskar.model.*;
+import com.bhaskar.model.ApproverLeaveDetail;
+import com.bhaskar.model.EmployeeLeaveDetail;
+import com.bhaskar.model.LeaveApplyDetail;
 import com.bhaskar.model.entities.Employee;
 import com.bhaskar.model.entities.EmployeeSecret;
-import com.bhaskar.security.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import sun.text.normalizer.ICUBinary;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,43 +34,53 @@ public class MainController {
     @Autowired
     private SignUpService signUpService;
 
-    @RequestMapping(value = "/employee/{uname}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/employee", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public Employee getEmployeeDetails(@PathVariable String uname){
-//        return employeeDetailService.getEmployeeDetails(uname);
+    public Employee getEmployeeDetails(){
+        return employeeDetailService.getEmployeeDetails();
+    }
+
+    @RequestMapping(value = "/leaves", method = RequestMethod.GET, produces="application/json")
+    @ResponseBody
+    public List<EmployeeLeaveDetail> getEmployeeLeaves(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = (String)auth.getPrincipal();
-        return employeeDetailService.getEmployeeDetails(name);
+        return employeeLeaveService.getEmployeeLeaves(name);
     }
 
-    @RequestMapping(value = "/leaves/{uname}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/requests", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<EmployeeLeaveDetail> getEmployeeLeaves(@PathVariable String uname){
-        return employeeLeaveService.getEmployeeLeaves(uname);
+    public List<ApproverLeaveDetail> getApproverLeaveDetails(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String)auth.getPrincipal();
+        return approverLeaveService.getApproverLeaveDetails(name);
     }
 
-    @RequestMapping(value = "/requests/{uname}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/leaveinfo", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<ApproverLeaveDetail> getApproverLeaveDetails(@PathVariable String uname){
-        return approverLeaveService.getApproverLeaveDetails(uname);
+    public LeaveApplyDetail getLeaveApplyDetails(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String)auth.getPrincipal();
+        return leaveApplyDetailService.getLeaveApplyDetails(name);
     }
 
-    @RequestMapping(value = "/leaveinfo/{uname}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value="/leavesubmit", method = RequestMethod.POST)
     @ResponseBody
-    public LeaveApplyDetail getLeaveApplyDetails(@PathVariable String uname){
-        return leaveApplyDetailService.getLeaveApplyDetails(uname);
-    }
+    public List<EmployeeLeaveDetail> submitLeave(@RequestBody Map<String, Object> payload)throws Exception{
 
-    @RequestMapping(value="/leavesubmit/{uname}", method = RequestMethod.POST)
-    @ResponseBody
-    public void submitLeave(@RequestBody Map<String, Object> payload)throws Exception{
         submitLeaveService.submitLeave(payload);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String)auth.getPrincipal();
+        return employeeLeaveService.getEmployeeLeaves(name);
     }
 
-    @RequestMapping(value="/statuschange/{uname}", method = RequestMethod.POST)
+    @RequestMapping(value="/statuschange", method = RequestMethod.POST)
     @ResponseBody
-    public void changeLeaveStatus(@RequestBody Map<String, Object> payload)throws Exception{
+    public List<ApproverLeaveDetail> changeLeaveStatus(@RequestBody Map<String, Object> payload)throws Exception{
         changeLeaveStatusService.approveOrReject(payload);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = (String)auth.getPrincipal();
+        return approverLeaveService.getApproverLeaveDetails(name);
     }
 
     @RequestMapping(value="/signup", method = RequestMethod.POST)
@@ -81,24 +91,15 @@ public class MainController {
 
     @RequestMapping(value="/login", method = RequestMethod.POST,produces = "application/json")
     @ResponseBody
-    public MyUser login(HttpServletRequest request, HttpServletResponse response){
-        MyUser user = new MyUser();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        System.out.println("authentication object is "+auth);
-        String name = (String) auth.getPrincipal();
-
-        user.setUname(name);
-        user.setRole(1);
-        user.setToken("token is here");
-        return user;
+    public void login(HttpServletRequest request, HttpServletResponse response){
     }
 
-    @RequestMapping(value = "/hello",method = RequestMethod.GET)
+    @RequestMapping(value = "/hello",method = RequestMethod.POST)
     @ResponseBody
-    public String hello(){
+    public String hello(@RequestBody Map<String, Object> payload){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = (String) authentication.getPrincipal();
+        System.out.println(payload);
         return name;
     }
 

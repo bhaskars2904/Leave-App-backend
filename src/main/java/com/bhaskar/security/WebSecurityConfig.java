@@ -29,9 +29,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         http.csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS,"/").permitAll()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.GET,"/").permitAll()
+                .antMatchers("/favicon.ico").permitAll()
+                .antMatchers( "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/signup").permitAll()
+                .antMatchers( "/src/**").permitAll()
+                .antMatchers( "/bower_components/**").permitAll()
+                .antMatchers( "/images/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // We filter the api/login requests

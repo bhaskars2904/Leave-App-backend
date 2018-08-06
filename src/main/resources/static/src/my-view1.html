@@ -1,0 +1,176 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/vaadin-dialog/vaadin-dialog.html">
+<link rel="import" href="my-modal.html">
+<link rel="import" href="leave-imports.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view1">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      #grid {
+      	height: 500px;
+      }
+      .leavebtn{
+      	bottom: 20px;
+        left: 400px;
+        position: absolute;
+        height: 40px;
+        font-size: 18px;
+      }
+      .leavebtn:hover {
+      	background-color: #3D8AC6;
+      },
+      #applyModal{
+      	width: 450px;
+      }
+    </style>
+
+	  <iron-ajax
+			  content-type="application/json"
+			  id="getLeavesAjax"
+			  headers="[[headers]]"
+			  url="http://localhost:8080/leaves"
+			  handle-as="json"
+			  method="GET"
+			  on-response="_handleLeaves"
+			  on-error="_handleLoginError">
+	  </iron-ajax>
+
+	  <iron-ajax
+			  content-type="application/json"
+			  id="getLeaveInfoAjax"
+			  headers="[[headers]]"
+			  url="http://localhost:8080/leaveinfo"
+			  handle-as="json"
+			  method="GET"
+			  on-response="_handleLeaveInfoBeforeApply">
+	  </iron-ajax>
+    <div>
+
+		<div id="grid">
+			<px-data-grid
+				table-data="[[leaves]]"
+				resizable
+				flex-to-size="true"
+				column-reordering-allowed
+				selection-mode="single"
+				hide-action-menu
+				hide-selection-column
+				table-actions='[{"name":"Export CSV","id":"CSV"}]'
+				item-actions='[]'
+				highlight='[]'>
+			</px-data-grid>
+		</div>
+		 <paper-button raised class="leavebtn" on-click="openModel">Apply Leave</paper-button>
+		 <vaadin-dialog opened="{{opened}}" id="applyModal">
+		  <template>
+			<my-modal data ="{{leaveInfoBeforeApply}}" token="{{token}}" opened="{{opened}}" on-leavesent="insertLeaveToTable"></my-modal>
+		  </template>
+		 </vaadin-dialog>
+
+    </div>
+  </template>
+
+  <script>
+    class MyView1 extends Polymer.Element {
+      static get is() { return 'my-view1'; }
+      static get properties(){
+      	return {
+      		leaves: {
+      			type: Array,
+      			value: []
+      		},
+      		data: {
+      			type: Array,
+      			value: []
+      		},
+      		token: {
+				type: String,
+				notify: true
+			},
+      		activeItem: {
+            	observer: '_activeItemChanged'
+          	},
+          	headers: {
+				type: Object,
+				computed: '_computeHeader(token)'
+			},
+			leaveInfoBeforeApply: {
+				type: Object,
+				value: {}
+			}
+      	}
+      }
+      constructor(){
+      	super();
+      	this.opened = false;
+    	this.data=[];
+      }
+
+      static get observers() {
+        return [
+          '_getLeaves(token)'
+        ];
+      }
+
+      _computeHeader(token) {
+        return {"Authorization": this.token};
+      }
+
+      _getLeaves(token){
+      	if(token != "" && token!=null){
+      		this.$.getLeavesAjax.generateRequest();
+      	}
+      }
+
+      _handleLeaves(evt){
+      	this.data = evt.detail.xhr.response;
+      	console.log("handle emp leaves data below");
+      	console.log(this.leaves);
+      	this.leaves = LeaveService.getLeavesForTable(this.data);
+      	<!--console.log("converted handle leaves data "+this.leaves);-->
+      }
+
+		insertLeaveToTable(leave){
+			this.leaves = [];
+			this.leaves=leave.detail;
+			<!--console.log("leave = ");-->
+			<!--console.log(leave.detail);-->
+			<!--console.log("leaves = ");-->
+			<!--console.log(this.leaves);-->
+			<!--this.push('leaves', leave);-->
+		}
+      openModel(e){
+      	this.opened = !this.opened ;
+      	if(this.token != ""){
+			this.$.getLeaveInfoAjax.generateRequest();
+			console.log("leaveinfo called b4 applying");
+		}
+      }
+
+      _handleLeaveInfoBeforeApply(evt){
+      	this.leaveInfoBeforeApply = evt.detail.xhr.response;
+      	console.log("leave info b4 applying data below");
+      	console.log(evt.detail.xhr.response);
+      }
+
+      _activeItemChanged(item) {
+          this.$.grid.selectedItems = item ? [item] : [];
+          <!--console.log(item);-->
+	   }
+
+		closeDialog(){
+			this.opened = ! this.opened ;
+		}
+    }
+
+    window.customElements.define(MyView1.is, MyView1);
+  </script>
+</dom-module>

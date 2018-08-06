@@ -2,7 +2,6 @@ package com.bhaskar.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
 public class LeaveBalance {

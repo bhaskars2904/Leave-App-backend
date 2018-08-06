@@ -1,0 +1,82 @@
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="login-page.html">
+<link rel="import" href="my-app.html">
+
+<dom-module id="leave-application">
+    <template>
+        <style>
+          :host {
+            display: flex;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+          }
+
+          neon-animated-pages {
+            flex: 1;
+          }
+          iron-pages {
+            flex: 1;
+          }
+          login-page {
+            height: 100%;
+          }
+        </style>
+
+        <!--<neon-animated-pages selected="{{selected}}">-->
+
+            <!--<login-page token="{{token}}"></login-page>-->
+            <!--<my-app token="{{token}}" on-signout="signout"></my-app>-->
+
+        <!--</neon-animated-pages>-->
+
+        <iron-pages selected="{{selected}}">
+
+            <login-page token="{{token}}"></login-page>
+            <my-app token="{{token}}" on-signout="signout"></my-app>
+
+        </iron-pages>
+
+
+        <iron-localstorage name="token" value="{{token}}"></iron-localstorage>
+
+    </template>
+    <script>
+    class LeaveApplication extends Polymer.Element{
+
+        static get is(){return 'leave-application';}
+
+        static get properties() {
+            return {
+                      token: {
+                      type: String,
+                      notify: true,
+                      value: ''
+                    },
+                    selected: {
+                      type: Number,
+                      notify: true,
+                      computed: 'selectPage(token)'
+                    }
+                };
+            }
+
+        signout(){
+            console.log("location = "+location);
+            this.token= '';
+        }
+
+        selectPage(token) {
+            return token ? 1 : 0;
+        }
+
+    }
+    window.customElements.define(LeaveApplication.is, LeaveApplication);
+  </script>
+</dom-module>
