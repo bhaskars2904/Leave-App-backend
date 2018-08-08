@@ -1,16 +1,7 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/vaadin-dialog/vaadin-dialog.html">
+<link rel="import" href="../bower_components/px-data-grid/px-data-grid.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="request-imports.html">
 
@@ -103,11 +94,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       static get is() { return 'my-view2'; }
       static get properties(){
         return {
-          data: {
+          requests: {
             type: Array,
             value: []
           },
-          requests: {
+          data: {
             type: Array,
             value: []
           },
@@ -136,8 +127,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         super();
         this.opened = false;
         this.data = [];
-        this.requests=[];
-        <!--this.requests = RequestService.getRequestsForTable(this.data);-->
       }
        
       _selected(item){
@@ -166,14 +155,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _handleRequests(evt){
-        console.log(evt.detail.xhr.response);
       	this.data = evt.detail.xhr.response;
       	this.requests = RequestService.getRequestsForTable(this.data);
       }
-
-      <!--submit(e){-->
-        <!--this.opened = false;  -->
-      <!--}-->
 
       approve(e){
         this.opened = false;

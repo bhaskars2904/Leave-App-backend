@@ -68,7 +68,9 @@
             }
 
         signout(){
-            console.log("location = "+location);
+            console.log("location = "+location.href);
+            console.log("location origin = "+location.origin);
+            location.href = location.origin;
             this.token= '';
         }
 

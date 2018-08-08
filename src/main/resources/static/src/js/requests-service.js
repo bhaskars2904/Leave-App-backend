@@ -20,7 +20,7 @@ let RequestService = (function(){
                 leavedays : item.numLeaveDays
             }
             requests = requests.concat(request);
-        })
+        });
         return requests;
     }
 
